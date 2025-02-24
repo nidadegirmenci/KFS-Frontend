@@ -1,0 +1,54 @@
+.rich-editor {
+  border: 1px solid hsl(var(--input));
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.rich-editor-toolbar {
+  display: flex;
+  padding: 0.5rem;
+  border-bottom: 1px solid hsl(var(--input));
+  background-color: hsl(var(--muted));
+  gap: 0.5rem;
+}
+
+.rich-editor-content {
+  min-height: 200px;
+  padding: 1rem;
+  background-color: white;
+}
+
+.character-counter {
+  text-align: right;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.file-upload-area {
+  border: 2px dashed hsl(var(--input));
+  border-radius: 0.5rem;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease-out;
+}
+
+.file-upload-area:hover {
+  border-color: hsl(var(--primary));
+  background-color: hsl(var(--muted) / 0.1);
+}
+
+.file-preview {
+  max-width: 200px;
+  margin: 1rem auto;
+}
+
+.notification-banner {
+  background-color: hsl(var(--warning) / 0.1);
+  border: 1px solid hsl(var(--warning));
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
