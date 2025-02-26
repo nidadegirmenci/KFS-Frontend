@@ -1,14 +1,23 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
+import { Button } from "@/app/components/ui/button"
 import { FileUpload } from "../../components/ui/file-upload"
 import "../entrepreneur-registration/styles/custom-inputs.css"
 
 export default function InvestorRegistrationPage() {
-  const [formData, setFormData] = useState({
-    // Pre-filled data (simulated)
+  const [formData, setFormData] = useState<{
+    image: File | null;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    tcKimlikNo: string;
+    birthDate: string;
+    mkkNo: string;
+    annualIncome: string;
+  }>({
     image: null,
     firstName: "John",
     lastName: "Doe",
@@ -16,21 +25,17 @@ export default function InvestorRegistrationPage() {
     phone: "+90 555 123 4567",
     tcKimlikNo: "12345678901", // Placeholder 11-digit number
     birthDate: "1990-01-01",
-
-    // New fields
     mkkNo: "",
     annualIncome: "",
   })
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleFileSelect = (file: File | null) => {
-    setFormData((prev) => ({ ...prev, image: file }))
-  }
-
+ 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     console.log("Form submitted:", formData)
@@ -45,7 +50,13 @@ export default function InvestorRegistrationPage() {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="flex justify-center">
-            <FileUpload onFileSelect={handleFileSelect} initialImageUrl={formData.image} />
+            <FileUpload
+              multiple={true}
+              onFileSelect={(file) => console.log(file)}
+              initialFile={[]}
+              accept="image/*"
+            />
+
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

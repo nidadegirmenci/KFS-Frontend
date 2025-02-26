@@ -3,14 +3,14 @@
 import type React from "react"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
+import { Input } from "@/app/components/ui/input"
+import { Label } from "@/app/components/ui/label"
+import { Textarea } from "@/app/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
+import { Button } from "@/app/components/ui/button"
 import { FileUpload } from "@/app/components/ui/file-upload"
-import { InfoIcon as InfoCircle, Plus , ChevronRight , ChevronLeft } from "lucide-react"
+import { InfoIcon as InfoCircle, Plus, ChevronRight, ChevronLeft } from "lucide-react"
 import { getCities, getDistricts } from "./cities-districts"
 import { useRouter } from "next/navigation"
 import { useNavigationHelpers } from "../utils/navigation"
@@ -170,7 +170,12 @@ export default function KampanyaKurulusPage({ params }: { params: { kampanyaId: 
 
                 <div className="space-y-2">
                   <Label>Özgeçmiş</Label>
-                  <FileUpload accept=".pdf,.doc,.docx" onChange={(file) => console.log(file)} />
+                  <FileUpload
+                    multiple={true}
+                    onFileSelect={(file) => console.log(file)}
+                    accept="image/*"
+                  />
+
                 </div>
 
                 <div className="space-y-2">
@@ -238,7 +243,7 @@ export default function KampanyaKurulusPage({ params }: { params: { kampanyaId: 
         {/* Navigation buttons */}
         <div className="flex justify-between items-center mt-6">
           <Button type="button" variant="outline" size="lg" onClick={handlePrevClick}>
-          <ChevronRight className="w-4 h-4 ml-2" />
+            <ChevronRight className="w-4 h-4 ml-2" />
             Önceki Forma Dön
           </Button>
           <Button type="submit" size="lg">

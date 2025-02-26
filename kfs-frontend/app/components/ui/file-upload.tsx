@@ -7,8 +7,8 @@ import { Input } from "./input"
 import { FileText, Upload, X } from "lucide-react"
 
 interface FileUploadProps {
-  onFileSelect: (file: File | null) => void
-  initialFile?: File | null
+  onFileSelect: (file: File | File[] | null) => void
+  initialFile?: File | File[] | null
   accept?: string
   multiple?: boolean
   className?: string
@@ -21,14 +21,16 @@ export function FileUpload({
   multiple = false,
   className = "",
 }: FileUploadProps) {
-  const [files, setFiles] = useState<File[]>(initialFile ? [initialFile] : [])
+  // Çoklu dosya desteği için state'i güncelle
+  const [files, setFiles] = useState<File[]>(Array.isArray(initialFile) ? initialFile : initialFile ? [initialFile] : [])
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(event.target.files || [])
     if (selectedFiles.length > 0) {
-      setFiles(multiple ? [...files, ...selectedFiles] : [selectedFiles[0]])
-      onFileSelect(multiple ? selectedFiles[0] : selectedFiles[0])
+      const newFiles = multiple ? [...files, ...selectedFiles] : [selectedFiles[0]]
+      setFiles(newFiles)
+      onFileSelect(multiple ? newFiles : newFiles[0])
     }
   }
 
@@ -38,7 +40,7 @@ export function FileUpload({
     if (fileInputRef.current) {
       fileInputRef.current.value = ""
     }
-    onFileSelect(multiple ? newFiles : newFiles[0] || null)
+    onFileSelect(multiple ? newFiles : newFiles.length > 0 ? newFiles[0] : null)
   }
 
   const formatFileSize = (bytes: number) => {
@@ -98,4 +100,4 @@ export function FileUpload({
     </div>
   )
 }
-
+export default FileUpload

@@ -1,7 +1,7 @@
 "use client"
 
 import type * as React from "react"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Popover, PopoverContent, PopoverTrigger } from "./popover"
 import { HelpCircle } from "lucide-react"
 
 interface PopoverTooltipProps {

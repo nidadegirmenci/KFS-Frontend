@@ -4,14 +4,14 @@ import Link from "next/link"
 import { useState } from "react"
 import { Menu, ChevronDown, User } from "lucide-react"
 import MobileMenu from "./mobile-menu"
-import { Button } from "@/components/ui/button"
+import { Button } from "./ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "./ui/dropdown-menu"
 import { useLogin } from "../hooks/useLogin"
 import { useLogout } from "../hooks/useLogout"
 

@@ -1,8 +1,8 @@
 "use client"
 
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/app/components/ui/input"
+import { Label } from "@/app/components/ui/label"
+import { Checkbox } from "@/app/components/ui/checkbox"
 import { campaignStatuses } from "@/app/mocks/campaign-statuses"
 import { sectors } from "@/app/mocks/sectors"
 import { categories } from "@/app/mocks/categories"

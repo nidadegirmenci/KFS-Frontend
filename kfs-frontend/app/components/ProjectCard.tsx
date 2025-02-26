@@ -2,10 +2,10 @@ import Link from "next/link"
 import Image from "next/image"
 import { ArrowRight, Clock, Target, Users, CheckCircle } from "lucide-react"
 import type { Project } from "../mocks/projects"
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "../components/ui/card"
+import { Button } from "../components/ui/button"
+import { Badge } from "../components/ui/badge"
+import { Progress } from "../components/ui/progress"
 
 interface ProjectCardProps {
   project: Project

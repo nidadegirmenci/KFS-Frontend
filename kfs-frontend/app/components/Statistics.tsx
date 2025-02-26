@@ -3,7 +3,7 @@
 import type React from "react"
 import CountUp from "react-countup"
 import { Banknote, Users, Briefcase, Award } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "../components/ui/card"
 
 interface StatItemProps {
   value: number

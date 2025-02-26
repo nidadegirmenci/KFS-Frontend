@@ -1,8 +1,8 @@
 import Image from "next/image"
 import Link from "next/link"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
+import { Badge } from "@/app/components/ui/badge"
+import { Button } from "@/app/components/ui/button"
+import { Progress } from "@/app/components/ui/progress"
 import type { Campaign } from "@/app/mocks/campaigns"
 
 interface CampaignCardProps {

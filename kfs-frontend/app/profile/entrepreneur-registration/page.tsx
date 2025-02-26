@@ -1,15 +1,15 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
+import { Button } from "@/app/components/ui/button"
 import { FileUpload } from "../../components/ui/file-upload"
 import "./styles/custom-inputs.css"
 
 export default function EntrepreneurRegistrationPage() {
   const [formData, setFormData] = useState({
     // Pre-filled data (simulated)
-    image: null,
+    image: null as File | null,  // Dosya olabileceği için tipi belirttik
     firstName: "John",
     lastName: "Doe",
     email: "john.doe@example.com",
@@ -19,7 +19,7 @@ export default function EntrepreneurRegistrationPage() {
     website: "https://johndoe.com",
     gender: "male",
     academicTitle: "other",
-
+  
     // New fields
     country: "",
     city: "",
@@ -31,11 +31,12 @@ export default function EntrepreneurRegistrationPage() {
     sector: "",
     expertise: "",
     workExperience: "",
-    cv: null,
+    cv: null as File | null,  // CV de bir dosya olduğu için
     bankName: "",
     iban: "",
     nationality: "",
   })
+  
 
   const [countries, setCountries] = useState<{ name: string; code: string }[]>([])
 
@@ -88,7 +89,13 @@ export default function EntrepreneurRegistrationPage() {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="flex justify-center">
-            <FileUpload onFileSelect={(file) => handleFileSelect(file, "image")} initialImageUrl={formData.image} />
+            <FileUpload
+              multiple={true}
+              onFileSelect={(file) => console.log(file)}
+              initialFile={[]}
+              accept="image/*"
+            />
+
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -290,11 +297,11 @@ export default function EntrepreneurRegistrationPage() {
                 className="underline-select"
               >
                 <option value="" disabled hidden></option>
-                 <option value="primary">İlköğretim</option>
+                <option value="primary">İlköğretim</option>
                 <option value="secondary">Ortaöğretim</option>
                 <option value="highschool">Lise</option>
                 <option value="vocational">Meslek Yüksekokulu</option>
-             
+
                 <option value="bachelor">Lisans</option>
                 <option value="master">Yüksek Lisans</option>
                 <option value="phd">Doktora</option>
@@ -360,7 +367,7 @@ export default function EntrepreneurRegistrationPage() {
                   id="cv"
                   type="text"
                   placeholder="Dosya seçilmedi"
-                  value={formData.cv ? formData.cv.name : ""}
+                  value={formData.cv instanceof File ? formData.cv.name : ""}
                   readOnly
                   className="underline-input"
                 />
@@ -400,7 +407,7 @@ export default function EntrepreneurRegistrationPage() {
                 name="iban"
                 value={formData.iban}
                 onChange={handleInputChange}
-               
+
                 className="underline-input"
               />
               <label htmlFor="iban">IBAN</label>

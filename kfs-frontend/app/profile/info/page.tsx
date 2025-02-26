@@ -3,11 +3,11 @@
 import type React from "react"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
+import { Label } from "@/app/components/ui/label"
+import { Input } from "@/app/components/ui/input"
+import { Button } from "@/app/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
 import { FileUpload } from "../../components/ui/file-upload"
 import { Plus, Trash2, Linkedin, Instagram, Twitter, Globe } from "lucide-react"
 import "../entrepreneur-registration/styles/custom-inputs.css"
@@ -79,7 +79,13 @@ export default function InfoPage() {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="flex justify-center">
-            <FileUpload onFileSelect={handleFileSelect} />
+            <FileUpload
+              multiple={true}
+              onFileSelect={(file) => console.log(file)}
+              initialFile={[]}
+              accept="image/*"
+            />
+
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -4,7 +4,7 @@ import Statistics from "./components/Statistics"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { projects } from "./mocks/projects"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/app/components/ui/button"
 
 export default function HomePage() {
   return (

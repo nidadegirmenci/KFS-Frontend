@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, type FormEvent } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
+import { Button } from "@/app/components/ui/button"
+import { Alert, AlertDescription } from "@/app/components/ui/alert"
 import { FileUpload } from "@/app/components/ui/file-upload"
 import { useRouter } from "next/navigation"
 import { useNavigationHelpers } from "../utils/navigation"
@@ -47,7 +47,12 @@ export default function DigerBelgelerPage() {
             <AlertDescription>Bu alana dosya yükleme zorunluluğunuz bulunmamaktadır.</AlertDescription>
           </Alert>
 
-          <FileUpload onFileSelect={handleFileSelect} accept=".pdf,.doc,.docx,.xls,.xlsx" multiple={true} />
+          <FileUpload
+            multiple={true}
+            onFileSelect={(file) => console.log(file)}
+            accept="image/*"
+          />
+
         </CardContent>
       </Card>
 

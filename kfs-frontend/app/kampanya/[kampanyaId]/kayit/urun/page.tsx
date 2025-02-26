@@ -4,13 +4,13 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Bold, Italic, Underline, Heading, List, ListOrdered, Plus, Upload,HelpCircle, X } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
+import { Input } from "@/app/components/ui/input"
+import { Label } from "@/app/components/ui/label"
+import { Button } from "@/app/components/ui/button"
+import { Textarea } from "@/app/components/ui/textarea"
+import { PopoverTooltip } from "@/app/components/ui/popover-tooltip"
+import { Bold, Italic, Underline, Heading, List, ListOrdered, Plus, Upload, X } from "lucide-react"
 import { useNavigationHelpers } from "../utils/navigation"
 
 interface CustomTopic {
@@ -19,16 +19,7 @@ interface CustomTopic {
   description: string
   file: File | null
 }
-function PopoverTooltip({ content, className }: PopoverTooltipProps) {
-  return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <HelpCircle className={`h-4 w-4 text-blue-500 cursor-pointer ${className}`} />
-      </PopoverTrigger>
-      <PopoverContent className="w-80 text-sm">{content}</PopoverContent>
-    </Popover>
-  )
-}
+
 
 export default function UrunPage() {
   const router = useRouter()

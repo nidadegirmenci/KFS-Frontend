@@ -2,9 +2,9 @@
 
 import type { FC } from "react"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Button } from "../components/ui/button"
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../components/ui/sheet"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../components/ui/accordion"
 import { useLogin } from "../hooks/useLogin"
 import { useQueryClient } from "@tanstack/react-query"
 import { useLogout } from "../hooks/useLogout"
