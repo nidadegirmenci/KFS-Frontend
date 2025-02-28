@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu"
-import { useLogin } from "../hooks/useLogin"
+import { useLogin } from "../hooks/useAuth"
 import { useLogout } from "../hooks/useLogout"
 
 const Header = () => {

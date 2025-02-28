@@ -1,39 +1,39 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
+import { Button } from "@/app/components/ui/button"
+import { Input } from "@/app/components/ui/input"
+import { Label } from "@/app/components/ui/label"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/app/components/ui/card"
+import { Separator } from "@/app/components/ui/seperator"
 import Link from "next/link"
 import Image from "next/image"
-import { useLogin } from "@/app/hooks/useLogin"
+import { useLogin } from "@/app/hooks/useAuth"
 
 export default function SignIn() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const router = useRouter()
-  const { login: loginApi, isPending, error: apiError } = useLogin()
+  const { mutate: login, isPending, error: loginError } = useLogin(
+    () => {
+      router.push("/dashboard")
+    },
+    (error) => {
+      console.log(error.response.data.error.message)
+      setError(error.response.data.error.message)
+    }
+  )
 
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    loginApi(
-      { email, password },
-      {
-        onSuccess: () => {
-          router.push("/")
-        },
-        onError: (error) => {
-          setError(error.message)
-        },
-      },
-    )
+    try {
+      await login({ email, password })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Giriş yapılırken bir hata oluştu")
+    }
   }
 
   const handleGoogleSignIn = () => {
@@ -83,10 +83,13 @@ export default function SignIn() {
         </CardContent>
         <CardFooter className="flex flex-col">
          <Button className="w-full" onClick={handleSubmit} disabled={isPending}>
-  {isPending ? "Giriş yapılıyor..." : "Giriş Yap"}
-</Button>
-          {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
-          {apiError && <p className="text-sm text-red-500 mt-2">{apiError.message}</p>}
+            {isPending ? "Giriş yapılıyor..." : "Giriş Yap"}
+          </Button>
+          {(error || loginError) && (
+            <p className="text-sm text-red-500 mt-2">
+              {error || (loginError instanceof Error ? loginError.message : "Bir hata oluştu")}
+            </p>
+          )}
           <div className="mt-4 text-center">
             <Link href="#" className="text-sm text-blue-600 hover:underline">
               Şifremi Unuttum
