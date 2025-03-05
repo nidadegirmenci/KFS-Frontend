@@ -2,7 +2,7 @@
 
 import { type ReactNode, useState, useMemo } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname , useParams} from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/app/components/ui/button"
 import { ScrollArea } from "@/app/components/ui/scroll-area"
@@ -42,17 +42,15 @@ const sidebarItems = [
   { href: "onizleme", label: "Önizleme", icon: Eye }, // Added back Önizleme
 ]
 
-export default function KampanyaKayitLayout({
-  children,
-  params,
-}: {
-  children: ReactNode
-  params: { kampanyaId: string }
-}) {
+export default function KampanyaKayitLayout({children}: {
+  children: ReactNode }) {
   const [isSidebarVisible, setIsSidebarVisible] = useState(true)
   const pathname = usePathname()
 
   const toggleSidebar = () => setIsSidebarVisible(!isSidebarVisible)
+  const params = useParams<{ kampanyaId: string }>() // ✅ useParams() ile kampanyaId'yi al
+  const kampanyaId = params?.kampanyaId || "" // ✅ Güvenli erişim
+
 
   const currentPageTitle = useMemo(() => {
     const currentItem = sidebarItems.find((item) => pathname.includes(item.href))
@@ -70,7 +68,7 @@ export default function KampanyaKayitLayout({
         <ScrollArea className="h-screen p-4">
           <div className="space-y-4 pt-14">
             {sidebarItems.map((item) => (
-              <Link key={item.href} href={`/kampanya/${params.kampanyaId}/kayit/${item.href}`}>
+              <Link key={item.href} href={`/kampanya/${kampanyaId}/kayit/${item.href}`}>
                 <span
                   className={cn(
                     "group flex items-center rounded-md px-3 py-2 text-sm font-medium transition-all duration-200 ease-in-out hover:bg-gray-100 hover:text-gray-900 hover:scale-105",

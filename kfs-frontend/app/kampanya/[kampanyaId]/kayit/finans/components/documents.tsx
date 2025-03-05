@@ -8,6 +8,7 @@ import { Button } from "@/app/components/ui/button"
 import { Input } from "@/app/components/ui/input"
 import { Label } from "@/app/components/ui/label"
 import { Textarea } from "@/app/components/ui/textarea"
+import { TextEditor } from "@/app/components/ui/text-editor"
 import { Alert, AlertDescription } from "@/app/components/ui/alert"
 import { Plus, Upload, X } from "lucide-react"
 
@@ -71,7 +72,7 @@ export default function Documents() {
               value={fundingDescription}
               onChange={handleDescriptionChange}
               className="min-h-[200px] resize-none"
-              placeholder="Açıklama giriniz..."
+              placeholder=""
             />
             <div className="text-sm text-muted-foreground text-right">
               {fundingDescription.length} / {MAX_CHARS}
@@ -103,7 +104,7 @@ export default function Documents() {
                   <Input
                     value={doc.subject}
                     onChange={(e) => updateDocument(doc.id, "subject", e.target.value)}
-                    placeholder="Belge konusunu girin"
+                    aria-label=""
                   />
                 </div>
 

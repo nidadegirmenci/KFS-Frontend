@@ -10,7 +10,7 @@ import { Button } from "@/app/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
 import { FileUpload } from "../../components/ui/file-upload"
 import { Plus, Trash2, Linkedin, Instagram, Twitter, Globe } from "lucide-react"
-import "../entrepreneur-registration/styles/custom-inputs.css"
+
 
 // Mock user data
 const mockUserInfo = {
@@ -106,10 +106,9 @@ export default function InfoPage() {
               <Input id="phone" name="phone" value={userInfo.phone} disabled className="underline-input" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="website">Web Sitesi</Label>
               <Input
                 id="website"
-                name="website"
+                aria-label="Website"
                 value={userInfo.website}
                 onChange={handleInputChange}
                 className="underline-input"
@@ -144,10 +143,11 @@ export default function InfoPage() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="academicTitle">Akademik Ünvan</Label>
+             
               <Input
                 id="academicTitle"
                 name="academicTitle"
+                aria-label="Akademik Ünvan"
                 value={userInfo.academicTitle}
                 onChange={handleInputChange}
                 className="underline-input"
@@ -173,20 +173,20 @@ export default function InfoPage() {
                   </div>
                   {!["LinkedIn", "Instagram", "Twitter"].includes(account.name) && (
                     <Input
-                      placeholder="Platform adı"
+                     aria-label="Platform adı"
                       value={account.name}
                       onChange={(e) => handleSocialMediaChange(account.id, "name", e.target.value)}
                       className="underline-input"
                     />
                   )}
                   <Input
-                    placeholder="Kullanıcı adı"
+                  aria-label="Kullanıcı adı"
                     value={account.username}
                     onChange={(e) => handleSocialMediaChange(account.id, "username", e.target.value)}
                     className="underline-input"
                   />
                   <Input
-                    placeholder="Takipçi sayısı"
+                    aria-label="Takipçi sayısı"
                     type="number"
                     value={account.followers}
                     onChange={(e) => handleSocialMediaChange(account.id, "followers", e.target.value)}

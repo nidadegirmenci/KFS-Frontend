@@ -3,13 +3,14 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useParams} from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Input } from "@/app/components/ui/input"
 import { Label } from "@/app/components/ui/label"
 import { Button } from "@/app/components/ui/button"
 import { Textarea } from "@/app/components/ui/textarea"
-import { Plus, Upload, X, HelpCircle } from "lucide-react"
+import { TextEditor } from "@/app/components/ui/text-editor"
+import { Plus, Upload, X, HelpCircle , ChevronRight ,ChevronLeft} from "lucide-react"
 import { useNavigationHelpers } from "../utils/navigation"
 import { Popover, PopoverContent, PopoverTrigger } from "@/app/components/ui/popover"
 
@@ -28,6 +29,7 @@ function PopoverTooltip({ content, className }: PopoverTooltipProps) {
     </Popover>
   )
 }
+const MAX_PERMIT_DESCRIPTION_LENGTH = 2000
 
 interface Document {
   id: string
@@ -53,10 +55,12 @@ interface Permit {
 
 export default function BelgelerPage() {
   const router = useRouter()
-  const { getPreviousPage } = useNavigationHelpers()
+  const { getPreviousPage, getNextPage } = useNavigationHelpers()
   const [documents, setDocuments] = useState<Document[]>([])
   const [awards, setAwards] = useState<Award[]>([])
   const [permits, setPermits] = useState<Permit[]>([])
+  const params = useParams<{ kampanyaId: string }>() // useParams ile kampanyaId al
+  const kampanyaId = params?.kampanyaId || "" // ID yoksa boş string ata
 
   const addDocument = () => {
     const newDocument: Document = {
@@ -129,7 +133,23 @@ export default function BelgelerPage() {
       router.push(previousPage)
     }
   }
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
 
+    const formData = {
+      documents,
+      awards,
+      permits,
+    };
+
+    console.log("Form Data:", formData); // Debugging için
+
+
+    const nextPage = getNextPage("belgeler");
+    if (nextPage) {
+      router.push(nextPage);
+    }
+  };
   return (
     <div className="space-y-6">
       <Card>
@@ -162,7 +182,7 @@ export default function BelgelerPage() {
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor={`doc-desc-${doc.id}`}>Açıklama</Label>
-                    <Textarea
+                    <Input
                       id={`doc-desc-${doc.id}`}
                       value={doc.description}
                       onChange={(e) =>
@@ -248,7 +268,7 @@ export default function BelgelerPage() {
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor={`award-desc-${award.id}`}>Açıklama</Label>
-                    <Textarea
+                    <Input
                       id={`award-desc-${award.id}`}
                       value={award.description}
                       onChange={(e) =>
@@ -322,13 +342,14 @@ export default function BelgelerPage() {
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor={`permit-desc-${permit.id}`}>Açıklama</Label>
-                    <Textarea
-                      id={`permit-desc-${permit.id}`}
+                    <TextEditor
                       value={permit.description}
-                      onChange={(e) =>
-                        setPermits(permits.map((p) => (p.id === permit.id ? { ...p, description: e.target.value } : p)))
+                      onChange={(newValue) =>
+                        setPermits(permits.map((p) => (p.id === permit.id ? { ...p, description: newValue } : p)))
                       }
+                      maxLength={MAX_PERMIT_DESCRIPTION_LENGTH}
                     />
+
                   </div>
                   <div className="grid gap-2">
                     <Label>Belge</Label>
@@ -367,10 +388,12 @@ export default function BelgelerPage() {
 
       <div className="flex justify-between">
         <Button variant="outline" size="lg" onClick={handlePreviousPage}>
+        <ChevronLeft  className="w-4 h-4 ml-2" />
           Önceki Forma Dön
         </Button>
-        <Button type="submit" size="lg">
+        <Button type="submit" size="lg" onClick={handleSubmit}>
           Kaydet ve İlerle
+          <ChevronRight className="w-4 h-4 ml-2" />
         </Button>
       </div>
     </div>

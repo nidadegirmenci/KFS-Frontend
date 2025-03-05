@@ -5,6 +5,7 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { projects } from "./mocks/projects"
 import { Button } from "@/app/components/ui/button"
+import ClientsSlider from "./components/Clients-Slider"
 
 export default function HomePage() {
   return (
@@ -32,6 +33,7 @@ export default function HomePage() {
           </Button>
         </div>
       </div>
+      <ClientsSlider />
     </div>
   )
 }

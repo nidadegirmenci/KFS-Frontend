@@ -8,7 +8,7 @@ import { Button } from "@/app/components/ui/button"
 import { TextEditor } from "@/app/components/ui/text-editor"
 import { Switch } from "@/app/components/ui/switch"
 import { FileUpload } from "@/app/components/ui/file-upload"
-import { Info } from "lucide-react"
+import { Info , Trash2 , ChevronLeft, ChevronRight} from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useNavigationHelpers } from "../utils/navigation"
 
@@ -37,11 +37,16 @@ export default function KampanyaFonlamaPage() {
   const addFundUsage = () => {
     setFundUsages([...fundUsages, { description: "", startDate: "", endDate: "", amount: 0 }])
   }
+  const removeFundUsage = (index: number) => {
+    setFundUsages(fundUsages.filter((_, i) => i !== index))
+  }
 
   const addAdditionalFunding = () => {
     setAdditionalFundings([...additionalFundings, { description: "", date: "", amount: 0 }])
   }
-
+  const removeAdditionalFunding = (index: number) => {
+    setAdditionalFundings(additionalFundings.filter((_, i) => i !== index))
+  }
   const handlePrevClick = () => {
     const prevPage = getPreviousPage("fonlama")
     if (prevPage) {
@@ -49,12 +54,16 @@ export default function KampanyaFonlamaPage() {
     }
   }
 
-  const handleNextClick = () => {
+  const handleSubmit = () => {
+    // Burada form verileri kaydedilebilir
+    console.log({ fundUsages, additionalFundings, extraFunding, ownershipComparison, generalRationale })
+    
     const nextPage = getNextPage("fonlama")
     if (nextPage) {
       router.push(nextPage)
     }
   }
+
 
   return (
     <div className="space-y-8">
@@ -79,13 +88,13 @@ export default function KampanyaFonlamaPage() {
               <Label htmlFor="ventureValue">
                 Girişimin Değeri Nedir? <span className="text-red-500">*</span>
               </Label>
-              <Input id="ventureValue" type="number" placeholder="Girişimin değerini girin" />
+              <Input id="ventureValue" type="number" aria-label="Girişimin değerini girin" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="fundingNeeded">
                 Girişimin İçin ne Kadar Fona ihtiyacın Var? <span className="text-red-500">*</span>
               </Label>
-              <Input id="fundingNeeded" type="number" placeholder="İhtiyaç duyulan fon miktarını girin" />
+              <Input id="fundingNeeded" type="number" aria-label="İhtiyaç duyulan fon miktarını girin" />
             </div>
           </div>
           <div className="space-y-4">
@@ -93,13 +102,13 @@ export default function KampanyaFonlamaPage() {
               <Label htmlFor="fundPeriod">
                 Fon Kullanım Süresi (Ay) <span className="text-red-500">*</span>
               </Label>
-              <Input id="fundPeriod" type="number" placeholder="Ay olarak süreyi girin" />
+              <Input id="fundPeriod" type="number" aria-label="Ay olarak süreyi girin" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="equityOffered">
                 Bu Fon için % Kaç Hisse Vermek İstiyorsun? <span className="text-red-500">*</span>
               </Label>
-              <Input id="equityOffered" type="number" placeholder="Hisse yüzdesini girin" />
+              <Input id="equityOffered" type="number" aria-label="Hisse yüzdesini girin" />
             </div>
           </div>
           <div className="col-span-full">
@@ -195,6 +204,9 @@ export default function KampanyaFonlamaPage() {
                   }}
                 />
               </div>
+              <Button className="absolute right-1 p-1" variant="destructive" size="icon" onClick={() => removeFundUsage(index)}>
+                <Trash2 size={16} />
+              </Button>
             </div>
           ))}
         </CardContent>
@@ -246,6 +258,9 @@ export default function KampanyaFonlamaPage() {
                   }}
                 />
               </div>
+              <Button className="absolute right-1 p-1 mt-5" variant="destructive" size="icon" onClick={() => removeAdditionalFunding(index)}>
+                <Trash2 size={16} />
+              </Button>
             </div>
           ))}
         </CardContent>
@@ -297,9 +312,12 @@ export default function KampanyaFonlamaPage() {
       {/* Navigation Buttons */}
       <div className="flex justify-between">
         <Button variant="outline" onClick={handlePrevClick}>
+        <ChevronLeft className="w-4 h-4 ml-2" />
           Önceki Forma Dön
         </Button>
-        <Button onClick={handleNextClick}>Kaydet ve İlerle</Button>
+        <Button onClick={handleSubmit}>Kaydet ve İlerle
+        <ChevronRight className="w-4 h-4 ml-2" />
+        </Button>
       </div>
     </div>
   )

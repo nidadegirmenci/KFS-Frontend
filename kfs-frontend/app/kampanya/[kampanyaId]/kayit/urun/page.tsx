@@ -3,14 +3,14 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter ,useParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Input } from "@/app/components/ui/input"
 import { Label } from "@/app/components/ui/label"
 import { Button } from "@/app/components/ui/button"
-import { Textarea } from "@/app/components/ui/textarea"
+import { TextEditor } from "@/app/components/ui/text-editor"
 import { PopoverTooltip } from "@/app/components/ui/popover-tooltip"
-import { Bold, Italic, Underline, Heading, List, ListOrdered, Plus, Upload, X } from "lucide-react"
+import { ChevronLeft, ChevronRight, Plus, Upload, X } from "lucide-react"
 import { useNavigationHelpers } from "../utils/navigation"
 
 interface CustomTopic {
@@ -23,7 +23,7 @@ interface CustomTopic {
 
 export default function UrunPage() {
   const router = useRouter()
-  const { getPreviousPage , getNextPage } = useNavigationHelpers()
+  const { getPreviousPage, getNextPage } = useNavigationHelpers()
   // Product/Project Section
   const [shortDescription, setShortDescription] = useState("")
   const [productDetails, setProductDetails] = useState("")
@@ -50,6 +50,8 @@ export default function UrunPage() {
 
   // Custom Topics
   const [customTopics, setCustomTopics] = useState<CustomTopic[]>([])
+   const params = useParams<{ kampanyaId: string }>() // useParams ile kampanyaId al
+    const kampanyaId = params?.kampanyaId || "" // ID yoksa boş string ata
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, topicId: string) => {
     const file = e.target.files?.[0] || null
@@ -89,13 +91,7 @@ export default function UrunPage() {
       router.push(previousPage)
     }
   }
-  const handleNextPage = () => {
-    const nextPage = getNextPage("urun")
-    if (nextPage) {
-      router.push(nextPage)
-    }
-  }
-
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     // Prepare data for submission
@@ -126,33 +122,14 @@ export default function UrunPage() {
       if (topic.file) formData.append(`customTopicFile-${topic.id}`, topic.file)
     })
 
-    try {
-      const response = await fetch("/api/kampanya/urun", {
-        method: "POST",
-        body: formData,
-      })
-
-      if (!response.ok) {
-        // Handle error
-        console.error("Error submitting form:", response.status)
-        // Display error message to the user
-        // ...
-      } else {
-        // Navigate to the next page
-        router.push("/kampanya/[kampanyaId]/kayit/onay")
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error)
-      // Display error message to the user
-      // ...
+    const nextPage = getNextPage("urun"); // Bir sonraki sayfa yolunu al
+    if (nextPage) {
+      router.push(nextPage); // Kullanıcıyı bir sonraki sayfaya yönlendir
     }
   }
 
   return (
-   <form onSubmit={(e) => {
-      e.preventDefault()
-      handleNextPage()
-    }}>
+    <form onSubmit={handleSubmit}>
       <div className="space-y-6">
         {/* Product/Project Information */}
         <Card>
@@ -167,13 +144,13 @@ export default function UrunPage() {
                 <span className="text-destructive">*</span>
                 <PopoverTooltip content="Ürününüzü ve kullandığınız teknolojiyi kısaca özetleyin" />
               </div>
-              <Textarea
+              <TextEditor
                 value={shortDescription}
-                onChange={(e) => setShortDescription(e.target.value.slice(0, 250))}
-                className="resize-none"
-                placeholder="Kısa özet girin..."
+                onChange={(newValue) => setShortDescription(newValue.slice(0, 250))}
+                maxLength={250}
               />
-              <div className="text-sm text-muted-foreground text-right">{shortDescription.length} / 250</div>
+
+
             </div>
 
             {/* Product Details */}
@@ -184,35 +161,12 @@ export default function UrunPage() {
                   <span className="text-destructive">*</span>
                   <PopoverTooltip content="Ürün veya projeniz hakkında detaylı bilgi verin" />
                 </div>
-                <div className="border rounded-md">
-                  <div className="flex items-center gap-1 p-2 border-b">
-                    <Button variant="ghost" size="sm">
-                      <Bold className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Italic className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Underline className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Heading className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <List className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <ListOrdered className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <Textarea
-                    value={productDetails}
-                    onChange={(e) => setProductDetails(e.target.value.slice(0, 6000))}
-                    className="border-0 focus-visible:ring-0 min-h-[200px]"
-                    placeholder="Detaylı açıklama girin..."
-                  />
-                </div>
-                <div className="text-sm text-muted-foreground text-right">{productDetails.length} / 6000</div>
+
+                <TextEditor
+                  value={productDetails}
+                  onChange={(newValue) => setProductDetails(newValue.slice(0, 6000))}
+
+                />
               </div>
               <div className="min-w-[200px] space-y-2">
                 <Label className="text-sm text-muted-foreground">İlgili Döküman</Label>
@@ -249,35 +203,13 @@ export default function UrunPage() {
                   <span className="text-destructive">*</span>
                   <PopoverTooltip content="Çözmeye çalıştığınız problemi açıklayın" />
                 </div>
-                <div className="border rounded-md">
-                  <div className="flex items-center gap-1 p-2 border-b">
-                    <Button variant="ghost" size="sm">
-                      <Bold className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Italic className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Underline className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Heading className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <List className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <ListOrdered className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <Textarea
-                    value={problemIdentification}
-                    onChange={(e) => setProblemIdentification(e.target.value.slice(0, 6000))}
-                    className="border-0 focus-visible:ring-0"
-                    placeholder="Sorunu açıklayın..."
-                  />
-                </div>
-                <div className="text-sm text-muted-foreground text-right">{problemIdentification.length} / 6000</div>
+
+                <TextEditor
+                  value={problemIdentification}
+                  onChange={(newValue) => setProblemIdentification(newValue.slice(0, 6000))}
+
+                />
+
               </div>
             </div>
 
@@ -289,35 +221,13 @@ export default function UrunPage() {
                   <span className="text-destructive">*</span>
                   <PopoverTooltip content="Geliştirdiğiniz çözümü açıklayın" />
                 </div>
-                <div className="border rounded-md">
-                  <div className="flex items-center gap-1 p-2 border-b">
-                    <Button variant="ghost" size="sm">
-                      <Bold className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Italic className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Underline className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Heading className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <List className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <ListOrdered className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <Textarea
-                    value={solution}
-                    onChange={(e) => setSolution(e.target.value.slice(0, 6000))}
-                    className="border-0 focus-visible:ring-0"
-                    placeholder="Çözümü açıklayın..."
-                  />
-                </div>
-                <div className="text-sm text-muted-foreground text-right">{solution.length} / 6000</div>
+
+                <TextEditor
+                  value={solution}
+                  onChange={(newValue) => setSolution(newValue.slice(0, 6000))}
+                />
+
+
               </div>
             </div>
 
@@ -329,35 +239,14 @@ export default function UrunPage() {
                   <span className="text-destructive">*</span>
                   <PopoverTooltip content="Ürün veya projenizin değer önerilerini açıklayın" />
                 </div>
-                <div className="border rounded-md">
-                  <div className="flex items-center gap-1 p-2 border-b">
-                    <Button variant="ghost" size="sm">
-                      <Bold className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Italic className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Underline className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Heading className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <List className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <ListOrdered className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <Textarea
-                    value={valueProposition}
-                    onChange={(e) => setValueProposition(e.target.value.slice(0, 6000))}
-                    className="border-0 focus-visible:ring-0"
-                    placeholder="Değer önerilerini açıklayın..."
-                  />
-                </div>
-                <div className="text-sm text-muted-foreground text-right">{valueProposition.length} / 6000</div>
+
+                <TextEditor
+                  value={valueProposition}
+                  onChange={(newValue) => setValueProposition(newValue.slice(0, 6000))}
+
+                />
+
+
               </div>
             </div>
           </CardContent>
@@ -377,35 +266,13 @@ export default function UrunPage() {
                   <span className="text-destructive">*</span>
                   <PopoverTooltip content="Gelişim süreçlerini özetleyin" />
                 </div>
-                <div className="border rounded-md">
-                  <div className="flex items-center gap-1 p-2 border-b">
-                    <Button variant="ghost" size="sm">
-                      <Bold className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Italic className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Underline className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Heading className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <List className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <ListOrdered className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <Textarea
-                    value={developmentProcess}
-                    onChange={(e) => setDevelopmentProcess(e.target.value.slice(0, 4000))}
-                    className="border-0 focus-visible:ring-0"
-                    placeholder="Gelişim süreçlerini açıklayın..."
-                  />
-                </div>
-                <div className="text-sm text-muted-foreground text-right">{developmentProcess.length} / 4000</div>
+
+
+                <TextEditor
+                  value={developmentProcess}
+                  onChange={(newValue) => setDevelopmentProcess(newValue.slice(0, 4000))}
+
+                />
               </div>
               <div className="min-w-[200px] space-y-2">
                 <Label className="text-sm text-muted-foreground">İlgili Döküman</Label>
@@ -447,35 +314,11 @@ export default function UrunPage() {
                   <span className="text-destructive">*</span>
                   <PopoverTooltip content="Üretim süreçlerini özetleyin" />
                 </div>
-                <div className="border rounded-md">
-                  <div className="flex items-center gap-1 p-2 border-b">
-                    <Button variant="ghost" size="sm">
-                      <Bold className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Italic className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Underline className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Heading className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <List className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <ListOrdered className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <Textarea
-                    value={productionProcess}
-                    onChange={(e) => setProductionProcess(e.target.value.slice(0, 4000))}
-                    className="border-0 focus-visible:ring-0"
-                    placeholder="Üretim süreçlerini açıklayın..."
-                  />
-                </div>
-                <div className="text-sm text-muted-foreground text-right">{productionProcess.length} / 4000</div>
+
+                <TextEditor
+                  value={productionProcess}
+                  onChange={(newValue) => setProductionProcess(newValue.slice(0, 4000))}
+                />
               </div>
               <div className="min-w-[200px] space-y-2">
                 <Label className="text-sm text-muted-foreground">İlgili Döküman</Label>
@@ -517,36 +360,15 @@ export default function UrunPage() {
                   <span className="text-destructive">*</span>
                   <PopoverTooltip content="Olası yan ürünleri açıklayın" />
                 </div>
-                <div className="border rounded-md">
-                  <div className="flex items-center gap-1 p-2 border-b">
-                    <Button variant="ghost" size="sm">
-                      <Bold className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Italic className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Underline className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Heading className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <List className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <ListOrdered className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <Textarea
-                    value={byProducts}
-                    onChange={(e) => setByProducts(e.target.value.slice(0, 4000))}
-                    className="border-0 focus-visible:ring-0"
-                    placeholder="Yan ürünleri açıklayın..."
-                  />
-                </div>
-                <div className="text-sm text-muted-foreground text-right">{byProducts.length} / 4000</div>
+
+                <TextEditor
+                  value={byProducts}
+                  onChange={(newValue) => setByProducts(newValue.slice(0, 4000))}
+
+                />
+
               </div>
+
               <div className="min-w-[200px] space-y-2">
                 <Label className="text-sm text-muted-foreground">İlgili Döküman</Label>
                 <Input
@@ -576,41 +398,18 @@ export default function UrunPage() {
 
             {/* Technical Analysis */}
             <div className="grid grid-cols-[1fr,auto] gap-4 items-start">
-              <div className="space-y-2">
+              < div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Label>Teknik ve Tasarımsal Analizler Hakkında Özet Bilgi</Label>
                   <span className="text-destructive">*</span>
                   <PopoverTooltip content="Teknik ve tasarımsal analizleri özetleyin" />
                 </div>
-                <div className="border rounded-md">
-                  <div className="flex items-center gap-1 p-2 border-b">
-                    <Button variant="ghost" size="sm">
-                      <Bold className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Italic className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Underline className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Heading className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <List className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <ListOrdered className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <Textarea
-                    value={technicalAnalysis}
-                    onChange={(e) => setTechnicalAnalysis(e.target.value.slice(0, 4000))}
-                    className="border-0 focus-visible:ring-0"
-                    placeholder="Teknik ve tasarımsal analizleri açıklayın..."
-                  />
-                </div>
-                <div className="text-sm text-muted-foreground text-right">{technicalAnalysis.length} / 4000</div>
+                <TextEditor
+                  value={technicalAnalysis}
+                  onChange={(newValue) => setTechnicalAnalysis(newValue.slice(0, 4000))}
+
+                />
+
               </div>
               <div className="min-w-[200px] space-y-2">
                 <Label className="text-sm text-muted-foreground">İlgili Döküman</Label>
@@ -652,35 +451,12 @@ export default function UrunPage() {
                   <span className="text-destructive">*</span>
                   <PopoverTooltip content="AR-GE faaliyetlerini özetleyin" />
                 </div>
-                <div className="border rounded-md">
-                  <div className="flex items-center gap-1 p-2 border-b">
-                    <Button variant="ghost" size="sm">
-                      <Bold className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Italic className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Underline className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Heading className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <List className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <ListOrdered className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <Textarea
-                    value={rdActivities}
-                    onChange={(e) => setRdActivities(e.target.value.slice(0, 4000))}
-                    className="border-0 focus-visible:ring-0"
-                    placeholder="AR-GE faaliyetlerini açıklayın..."
-                  />
-                </div>
-                <div className="text-sm text-muted-foreground text-right">{rdActivities.length} / 4000</div>
+                <TextEditor
+                  value={rdActivities}
+                  onChange={(newValue) => setRdActivities(newValue.slice(0, 4000))}
+
+                />
+
               </div>
               <div className="min-w-[200px] space-y-2">
                 <Label className="text-sm text-muted-foreground">İlgili Doküman</Label>
@@ -717,35 +493,10 @@ export default function UrunPage() {
                   <span className="text-destructive">*</span>
                   <PopoverTooltip content="Önceki satışları özetleyin" />
                 </div>
-                <div className="border rounded-md">
-                  <div className="flex items-center gap-1 p-2 border-b">
-                    <Button variant="ghost" size="sm">
-                      <Bold className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Italic className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Underline className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Heading className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <List className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <ListOrdered className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <Textarea
-                    value={previousSales}
-                    onChange={(e) => setPreviousSales(e.target.value.slice(0, 4000))}
-                    className="border-0 focus-visible:ring-0"
-                    placeholder="Önceki satışları açıklayın..."
-                  />
-                </div>
-                <div className="text-sm text-muted-foreground text-right">{previousSales.length} / 4000</div>
+                <TextEditor
+                  value={previousSales}
+                  onChange={(newValue) => setPreviousSales(newValue.slice(0, 4000))}
+                />
               </div>
               <div className="min-w-[200px] space-y-2">
                 <Label className="text-sm text-muted-foreground">İlgili Döküman</Label>
@@ -784,15 +535,15 @@ export default function UrunPage() {
                 <CardTitle>Ürün/Proje ile İlgili Belirtmek İstediğiniz Diğer Konular</CardTitle>
                 <PopoverTooltip content="Ürün veya projeniz ile ilgili eklemek istediğiniz diğer konuları buraya ekleyebilirsiniz." />
               </div>
-            <div className="bg-muted/50 p-4 rounded-lg">
-        <div className="flex items-center justify-between">
-          
-          <Button type="button" onClick={addCustomTopic} variant="outline" size="sm">
-            <Plus className="h-4 w-4 mr-2" />
-            Yeni Ekle
-          </Button>
-        </div>
-      </div>
+              <div className="bg-muted/50 p-4 rounded-lg">
+                <div className="flex items-center justify-between">
+
+                  <Button type="button" onClick={addCustomTopic} variant="outline" size="sm">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Yeni Ekle
+                  </Button>
+                </div>
+              </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -806,45 +557,18 @@ export default function UrunPage() {
                         id={`topic-${topic.id}`}
                         value={topic.title}
                         onChange={(e) => handleCustomTopicChange(topic.id, "title", e.target.value)}
-                        placeholder="Konu başlığını girin..."
+                        aria-label="Konu başlığını girin..."
                       />
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor={`description-${topic.id}`}>Açıklama</Label>
-                      <div className="border rounded-md">
-                        <div className="flex items-center gap-1 p-2 border-b bg-muted/50">
-                          <Button variant="ghost" size="sm">
-                            <Bold className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Italic className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Underline className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Heading className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <List className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <ListOrdered className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        <Textarea
-                          id={`description-${topic.id}`}
-                          value={topic.description}
-                          onChange={(e) =>
-                            handleCustomTopicChange(topic.id, "description", e.target.value.slice(0, 2000))
-                          }
-                          className="border-0 focus-visible:ring-0 min-h-[200px]"
-                          placeholder="Açıklama girin..."
-                        />
-                        <div className="p-2 text-sm text-muted-foreground text-right border-t bg-muted/50">
-                          {topic.description.length} / 2000
-                        </div>
-                      </div>
+
+
+                      <TextEditor
+                        value={topic.description}
+                        onChange={(newValue) => handleCustomTopicChange(topic.id, "description", newValue.slice(0, 2000))}
+                        maxLength={2000}
+                      />
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
@@ -895,10 +619,12 @@ export default function UrunPage() {
 
         <div className="flex justify-between">
           <Button type="button" variant="outline" size="lg" onClick={handlePreviousPage}>
+            <ChevronLeft className="w-4 h-4 ml-2" />
             Önceki Forma Dön
           </Button>
           <Button type="submit" size="lg">
             Kaydet ve İlerle
+            <ChevronRight className="w-4 h-4 ml-2" />
           </Button>
         </div>
       </div>
