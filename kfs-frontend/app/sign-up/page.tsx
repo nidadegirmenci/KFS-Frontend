@@ -2,49 +2,64 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
+import { Button } from "@/app/components/ui/button"
+import { Input } from "@/app/components/ui/input"
+import { Label } from "@/app/components/ui/label"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/app/components/ui/card"
+import { Separator } from "@/app/components/ui/seperator"
 import Image from "next/image"
 import Link from "next/link"
-import { useSignUp } from "../hooks/useSignUp"
+import { useMail } from "../hooks/useMail"
 
 export default function SignUp() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState("")
+  
   const router = useRouter()
-  const { mutate: signUp, isLoading, error: apiError } = useSignUp()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // useMail hook'u TanStack ile mail gönderme işini halledecek
+  const { mutate: sendVerificationMail, isPending  } = useMail(
+    () => {
+      sessionStorage.setItem("registerEmail", email)
+      sessionStorage.setItem("registerPassword", password)
+      // Başarılı olursa doğrulama ekranına yönlendir
+      router.push(`/verify-email?email=${encodeURIComponent(email)}`)
+    },
+    (error: any) => {
+      setError(error.message || "Doğrulama maili gönderilirken bir hata oluştu.")
+    }
+  )
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError("")
+
     if (password !== confirmPassword) {
       setError("Şifreler eşleşmiyor.")
       return
     }
-    signUp(
-      { email, password },
-      {
-        onSuccess: (user) => {
-          router.push(`/verify-email?email=${encodeURIComponent(email)}`)
-        },
-        onError: (error) => {
-          setError(error.message)
-        },
-      },
-    )
+
+    try {
+      // Normalde burada kullanıcı kaydını yaparsın (kendi backend'ine kaydetme işlemi vs.)
+      console.log("Kayıt verileri:", { email, password })
+
+      // Simülasyon: Kullanıcı kaydının başarılı olduğunu varsayıyoruz
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+
+      // Kullanıcı başarıyla kaydolduktan sonra doğrulama e-postasını gönder
+      sendVerificationMail({ email })
+    } catch (error: any) {
+      setError(error.message || "Kayıt sırasında bir hata oluştu.")
+    }
   }
 
   const handleGoogleSignUp = () => {
-    // Google ile kayıt işlemi burada yapılacak
     console.log("Google ile kayıt olunuyor")
   }
 
   const handleAppleSignUp = () => {
-    // Apple ile kayıt işlemi burada yapılacak
     console.log("Apple ile kayıt olunuyor")
   }
 
@@ -100,11 +115,10 @@ export default function SignUp() {
           </form>
         </CardContent>
         <CardFooter className="flex flex-col">
-          <Button  className="w-full" onClick={handleSubmit} disabled={isLoading}>
-            {isLoading ? "Kayıt olunuyor..." : "Kayıt Ol"}
+          <Button className="w-full" onClick={handleSubmit} disabled={isPending}>
+            {isPending ? "Kayıt olunuyor..." : "Kayıt Ol"}
           </Button>
           {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
-          {apiError && <p className="text-sm text-red-500 mt-2">{apiError.message}</p>}
           <Separator className="my-4" />
           <div className="flex flex-col space-y-2 w-full">
             <Button variant="outline" className="w-full" onClick={handleGoogleSignUp}>
@@ -139,4 +153,3 @@ export default function SignUp() {
     </div>
   )
 }
-

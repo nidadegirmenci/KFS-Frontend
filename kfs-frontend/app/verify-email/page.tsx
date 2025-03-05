@@ -1,27 +1,48 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
+import { useRouter } from "next/navigation"
+import { Button } from "@/app/components/ui/button"
+import { Input } from "@/app/components/ui/input"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/app/components/ui/card"
+import { useRegister } from "../hooks/useRegister"
 
 export default function VerifyEmail() {
-  const [isVerified, setIsVerified] = useState(false)
+  const [code, setCode] = useState("")
+  const [error, setError] = useState("")
+
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const email = searchParams.get("email")
 
-  useEffect(() => {
-    // Simulate email verification process
-    const timer = setTimeout(() => {
-      setIsVerified(true)
-    }, 3000) // 3 seconds delay to simulate verification
+  const email = typeof window !== "undefined" ? sessionStorage.getItem("registerEmail") : null
+  const password = typeof window !== "undefined" ? sessionStorage.getItem("registerPassword") : null
 
-    return () => clearTimeout(timer)
-  }, [])
+  const { mutate: registerUser, isPending } = useRegister(
+    (data) => {
+      console.log("Register response data:", data);
 
-  const handleContinue = () => {
-    router.push(`/complete-registration?email=${encodeURIComponent(email || "")}`)
+    const userId = data?.userId ?? data?.data?.userId;  
+  
+      // Başarılı kayıt sonrası sessionStorage temizlenebilir
+      sessionStorage.removeItem("registerEmail");
+      sessionStorage.removeItem("registerPassword");
+  
+      // Burada userId'yi URL'ye ekleyerek yönlendiriyoruz
+      router.push(`/complete-registration?&userId=${userId}`);
+    },
+    (error) => {
+      setError(error.message || "Kayıt sırasında bir hata oluştu.");
+    }
+  );
+
+  const handleVerify = () => {
+    setError("")
+
+    if (!code || code.length !== 6) {
+      setError("Geçerli bir doğrulama kodu girin.")
+      return
+    }
+
+    registerUser({ email: email as string, password: password as string, code })
   }
 
   return (
@@ -30,23 +51,26 @@ export default function VerifyEmail() {
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">E-posta Doğrulama</CardTitle>
           <CardDescription className="text-center">
-            Lütfen e-posta adresinize gönderilen doğrulama bağlantısını kontrol edin.
+            Lütfen e-posta adresinize gönderilen 6 haneli doğrulama kodunu girin.
           </CardDescription>
         </CardHeader>
-        <CardContent className="text-center">
-          {isVerified ? (
-            <p className="text-green-600">E-posta adresiniz doğrulandı!</p>
-          ) : (
-            <p>Doğrulama işlemi devam ediyor...</p>
-          )}
+        <CardContent className="flex flex-col items-center space-y-4">
+          <Input
+            type="text"
+            maxLength={6}
+            placeholder="Doğrulama Kodu"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            className="text-center tracking-widest text-lg"
+          />
+          {error && <p className="text-red-500 text-sm">{error}</p>}
         </CardContent>
         <CardFooter className="flex justify-center">
-          <Button onClick={handleContinue} disabled={!isVerified}>
-            Kayıt İşlemini Tamamla
+          <Button onClick={handleVerify} disabled={isPending}>
+            {isPending ? "Doğruluyor..." : "Kodu Doğrula ve Devam Et"}
           </Button>
         </CardFooter>
       </Card>
     </div>
   )
 }
-

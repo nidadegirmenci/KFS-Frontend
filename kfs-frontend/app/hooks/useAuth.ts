@@ -1,10 +1,6 @@
 import { useMutation } from "@tanstack/react-query"
-import { login } from "../services/auth-api"
+import { login , LoginCredentials } from "../services/auth-api"
 
-interface LoginCredentials {
-  email: string
-  password: string
-}
 
 export const useLogin = (
   onSuccess: (data: any) => void,

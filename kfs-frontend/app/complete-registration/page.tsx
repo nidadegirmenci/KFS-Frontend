@@ -9,10 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
 import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group"
 import { Checkbox } from "@/app/components/ui/checkbox"
-import { PhoneVerificationPopup } from "../components/PhoneVerificationPopup"
-import { useAuth } from "../contexts/AuthContext"
-import { useCompleteRegistration } from "../hooks/useCompleteRegistration"
 import { countryCodes } from "../utils/countryCodes"
+import { useUpdateRegister } from "../hooks/useRegister"
 
 interface Country {
   name: string
@@ -32,13 +30,20 @@ export default function CompleteRegistration() {
   const [countries, setCountries] = useState<Country[]>([])
   const [isInvestor, setIsInvestor] = useState(false)
   const [isEntrepreneur, setIsEntrepreneur] = useState(false)
+  const [isKvkkApproved, setIsKvkkApproved] = useState(false)
   const [error, setError] = useState("")
-  const [isVerificationPopupOpen, setIsVerificationPopupOpen] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
-  const email = searchParams?.get("email") ?? ""
-  const { login } = useAuth()
-  const { mutate: completeRegistration, isLoading, error: apiError } = useCompleteRegistration()
+  const userId = searchParams?.get("userId");   // BURASI EKLENDİ 🔥
+
+  const { mutate: updateRegister, isPending } = useUpdateRegister(
+    () => {
+        router.push("/profile");
+    },
+    (error) => {
+        setError(error.message || "Kayıt güncellenirken bir hata oluştu.");
+    }
+);
 
   useEffect(() => {
     fetch("https://restcountries.com/v3.1/all?fields=name,cca2")
@@ -102,54 +107,43 @@ export default function CompleteRegistration() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!phoneNumber || !country || (!isInvestor && !isEntrepreneur)) {
-      setError("Lütfen tüm zorunlu alanları doldurun ve en az bir ilgi alanı seçin.")
-      return
+        setError("Lütfen tüm zorunlu alanları doldurun ve en az bir ilgi alanı seçin.")
+        return
     }
     if (accountType === "individual" && (!firstName || !lastName)) {
-      setError("Lütfen ad ve soyad alanlarını doldurun.")
-      return
+        setError("Lütfen ad ve soyad alanlarını doldurun.")
+        return
     }
     if (accountType === "corporate" && (!companyName || !taxOffice || !taxNumber)) {
-      setError("Lütfen tüm kurumsal bilgileri doldurun.")
-      return
+        setError("Lütfen tüm kurumsal bilgileri doldurun.")
+        return
+    }
+    if (!isKvkkApproved) {
+        setError("Lütfen KVKK metnini onaylayın.")
+        return
     }
     setError("")
-    setIsVerificationPopupOpen(true)
-  }
 
-  const handleVerify = (code: string) => {
-    // Simulating verification with a mock code
-    const mockVerificationCode = "123456"
-    if (code === mockVerificationCode) {
-      completeRegistration(
-        {
-          userId: 1, // Bu değer gerçek uygulamada dinamik olarak belirlenmelidir
-          accountType: accountType as "individual" | "corporate",
-          firstName,
-          lastName,
-          companyName,
-          taxOffice,
-          taxNumber,
-          country,
-          phone: phoneCode + phoneNumber,
-          isInvestor,
-          isEntrepreneur,
-        },
-        {
-          onSuccess: () => {
-            setIsVerificationPopupOpen(false)
-            login() // Update the auth state
-            router.push("/") // Redirect to the home page
-          },
-          onError: (error) => {
-            setError(error.message)
-          },
-        },
-      )
-    } else {
-      setError("Geçersiz doğrulama kodu. Lütfen tekrar deneyin.")
+    if (!userId) {
+        setError("Kullanıcı ID bulunamadı.")
+        return
     }
-  }
+
+    const updateData = {
+        userId: Number(userId),
+        firstName,
+        lastName,
+        phone: phoneCode + phoneNumber,
+        country,
+        companyName,
+        taxOffice,
+        taxNumber,
+        isLawApproved: isKvkkApproved,
+        userType: accountType 
+    }
+
+    updateRegister(updateData)
+}
 
   return (
     <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-screen bg-gradient-to-br from-green-100 to-blue-100">
@@ -191,10 +185,7 @@ export default function CompleteRegistration() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="email">E-posta</Label>
-                <Input id="email" value={email} disabled />
-              </div>
+              
               {accountType === "individual" ? (
                 <>
                   <div className="flex flex-col space-y-1.5">
@@ -243,6 +234,17 @@ export default function CompleteRegistration() {
                   />
                 </div>
               </div>
+               {/* KVKK Checkbox */}
+               <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="kvkk"
+                  checked={isKvkkApproved}
+                  onCheckedChange={(checked) => setIsKvkkApproved(checked as boolean)}
+                />
+                <Label htmlFor="kvkk" className="text-sm">
+                  KVKK metnini okudum ve onaylıyorum.
+                </Label>
+              </div>
               <div className="flex flex-col space-y-1.5">
                 <Label>İlgi Alanları</Label>
                 <div className="flex items-center space-x-2">
@@ -266,20 +268,12 @@ export default function CompleteRegistration() {
           </form>
         </CardContent>
         <CardFooter className="flex flex-col">
-          <Button className="w-full" onClick={handleSubmit} disabled={isLoading}>
-            {isLoading ? "İşlem yapılıyor..." : "Kayıt İşlemini Tamamla"}
-          </Button>
-          {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
-          {apiError && <p className="text-sm text-red-500 mt-2">{apiError.message}</p>}
-        </CardFooter>
+  <Button className="w-full" onClick={handleSubmit} disabled={isPending}>
+    {isPending ? "Kayıt Tamamlanıyor..." : "Kayıt İşlemini Tamamla"}
+  </Button>
+  {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
+</CardFooter>
       </Card>
-      <PhoneVerificationPopup
-        isOpen={isVerificationPopupOpen}
-        onClose={() => setIsVerificationPopupOpen(false)}
-        onVerify={handleVerify}
-        phone={phoneCode + phoneNumber}
-      />
     </div>
   )
 }
-
