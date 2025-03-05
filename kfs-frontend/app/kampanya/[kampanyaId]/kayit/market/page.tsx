@@ -2,11 +2,12 @@
 
 import type React from "react"
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter , useParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Button } from "@/app/components/ui/button"
 import { Input } from "@/app/components/ui/input"
 import { Label } from "@/app/components/ui/label"
+import { TextEditor } from "@/app/components/ui/text-editor"
 import { useNavigationHelpers } from "../utils/navigation"
 import {
   Plus,
@@ -14,92 +15,10 @@ import {
   ChevronRight,
   Trash2,
   X,
-  Bold,
-  Italic,
-  Underline,
-  Heading,
-  List,
-  ListOrdered,
+ 
 } from "lucide-react"
 
-interface TextEditorProps {
-  value: string
-  onChange: (value: string) => void
-  maxLength?: number
-}
 
-function TextEditor({ value, onChange, maxLength = 4000 }: TextEditorProps) {
-  const [textArea, setTextArea] = useState<HTMLTextAreaElement | null>(null)
-
-  const handleCommand = (command: string) => {
-    if (!textArea) return
-
-    const start = textArea.selectionStart
-    const end = textArea.selectionEnd
-    const selectedText = textArea.value.substring(start, end)
-    let newText = textArea.value
-
-    switch (command) {
-      case "bold":
-        newText = newText.substring(0, start) + `**${selectedText}**` + newText.substring(end)
-        break
-      case "italic":
-        newText = newText.substring(0, start) + `_${selectedText}_` + newText.substring(end)
-        break
-      case "underline":
-        newText = newText.substring(0, start) + `__${selectedText}__` + newText.substring(end)
-        break
-      case "heading":
-        newText = newText.substring(0, start) + `# ${selectedText}` + newText.substring(end)
-        break
-      case "bullet-list":
-        newText = newText.substring(0, start) + `\n- ${selectedText}` + newText.substring(end)
-        break
-      case "number-list":
-        newText = newText.substring(0, start) + `\n1. ${selectedText}` + newText.substring(end)
-        break
-    }
-
-    onChange(newText)
-  }
-
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center space-x-2 bg-muted p-1 rounded-md">
-        <Button type="button" variant="ghost" size="sm" onClick={() => handleCommand("bold")}>
-          <Bold className="h-4 w-4" />
-        </Button>
-        <Button type="button" variant="ghost" size="sm" onClick={() => handleCommand("italic")}>
-          <Italic className="h-4 w-4" />
-        </Button>
-        <Button type="button" variant="ghost" size="sm" onClick={() => handleCommand("underline")}>
-          <Underline className="h-4 w-4" />
-        </Button>
-        <Button type="button" variant="ghost" size="sm" onClick={() => handleCommand("heading")}>
-          <Heading className="h-4 w-4" />
-        </Button>
-        <Button type="button" variant="ghost" size="sm" onClick={() => handleCommand("bullet-list")}>
-          <List className="h-4 w-4" />
-        </Button>
-        <Button type="button" variant="ghost" size="sm" onClick={() => handleCommand("number-list")}>
-          <ListOrdered className="h-4 w-4" />
-        </Button>
-      </div>
-      <div className="relative">
-        <textarea
-          ref={setTextArea}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          maxLength={maxLength}
-          className="w-full min-h-[100px] p-2 border rounded-md resize-y"
-        />
-        <div className="absolute bottom-2 right-2 text-sm text-gray-500">
-          {value.length} / {maxLength}
-        </div>
-      </div>
-    </div>
-  )
-}
 
 interface AdditionalTopic {
   id: number
@@ -113,7 +32,7 @@ interface UploadedFile {
   name: string
 }
 
-export default function KampanyaMarketPage({ params }: { params: { kampanyaId: string } }) {
+export default function KampanyaMarketPage() {
   const router = useRouter()
   const { getPreviousPage, getNextPage } = useNavigationHelpers()
   const [marketText, setMarketText] = useState("")
@@ -125,6 +44,8 @@ export default function KampanyaMarketPage({ params }: { params: { kampanyaId: s
   const [competitionFile, setCompetitionFile] = useState<UploadedFile | null>(null)
   const [targetAudienceFile, setTargetAudienceFile] = useState<UploadedFile | null>(null)
   const [commercializationFile, setCommercializationFile] = useState<UploadedFile | null>(null)
+   const params = useParams<{ kampanyaId: string }>() // useParams ile kampanyaId al
+    const kampanyaId = params?.kampanyaId || "" // ID yoksa boş string ata
 
   const handleFileChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -413,7 +334,7 @@ export default function KampanyaMarketPage({ params }: { params: { kampanyaId: s
           Önceki Forma Dön
         </Button>
         <Button type="submit">
-          Devam Et
+          Kaydet ve İlerle
           <ChevronRight className="w-4 h-4 ml-2" />
         </Button>
       </div>

@@ -66,7 +66,7 @@ export default function KampanyaKurulusPage({ params }: { params: { kampanyaId: 
                 <Label htmlFor="title">
                   Ünvan <span className="text-red-500">*</span>
                 </Label>
-                <Input id="title" placeholder="Şirket ünvanını girin" required />
+                <Input id="title" aria-label="" required />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -76,7 +76,7 @@ export default function KampanyaKurulusPage({ params }: { params: { kampanyaId: 
                   </Label>
                   <Select onValueChange={handleCityChange} required>
                     <SelectTrigger>
-                      <SelectValue placeholder="İl seçin" />
+                      <SelectValue aria-label="İl seçin" />
                     </SelectTrigger>
                     <SelectContent>
                       {cities.map((city) => (
@@ -109,9 +109,9 @@ export default function KampanyaKurulusPage({ params }: { params: { kampanyaId: 
 
               <div className="space-y-2">
                 <Label htmlFor="address">Adres</Label>
-                <Textarea
+                <Input
                   id="address"
-                  placeholder="Açık adres bilgilerini girin"
+                  placeholder=""
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   maxLength={500}
@@ -124,7 +124,7 @@ export default function KampanyaKurulusPage({ params }: { params: { kampanyaId: 
                   Sermaye <span className="text-red-500">*</span>
                 </Label>
                 <div className="relative">
-                  <Input id="capital" type="number" placeholder="Sermaye tutarını girin" required className="pl-7" />
+                  <Input id="capital" type="number" aria-label="" required className="pl-7" />
                   <span className="absolute left-2 top-1/2 -translate-y-1/2">₺</span>
                 </div>
               </div>
@@ -149,22 +149,22 @@ export default function KampanyaKurulusPage({ params }: { params: { kampanyaId: 
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label>Adı Soyadı / Ticaret Unvanı</Label>
-                  <Input placeholder="Adı soyadı veya ticaret unvanını girin" />
+                  <Input aria-label="" />
                 </div>
 
                 <div className="space-y-2">
                   <Label>Görevi / Unvanı</Label>
-                  <Input placeholder="Görev veya unvan bilgisini girin" />
+                  <Input placeholder="" />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Mezun Olunan Okul/Üniversite</Label>
-                    <Input placeholder="Okul/üniversite adını girin" />
+                    <Input placeholder="" />
                   </div>
                   <div className="space-y-2">
                     <Label>Not Ortalaması</Label>
-                    <Input type="number" step="0.01" placeholder="Not ortalamasını girin" />
+                    <Input type="number" step="0.01" placeholder="" />
                   </div>
                 </div>
 
@@ -173,65 +173,65 @@ export default function KampanyaKurulusPage({ params }: { params: { kampanyaId: 
                   <FileUpload
                     multiple={true}
                     onFileSelect={(file) => console.log(file)}
-                    accept="image/*"
+                    accept="application/pdf"
                   />
 
                 </div>
 
                 <div className="space-y-2">
                   <Label>Vatandaşı Olunan Ülkeler</Label>
-                  <Input placeholder="Vatandaşı olunan ülkeleri girin" />
+                  <Input placeholder="" />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <Label>Sermayedeki Pay Tutarı</Label>
-                    <Input type="number" placeholder="Pay tutarını girin" />
+                    <Input type="number" placeholder="" />
                   </div>
                   <div className="space-y-2">
                     <Label>Sermayedeki Pay Oranı</Label>
-                    <Input type="number" placeholder="Pay oranını girin" />
+                    <Input type="number" placeholder="" />
                   </div>
                   <div className="space-y-2">
                     <Label>Oy Hakkı</Label>
-                    <Input type="number" placeholder="Oy hakkı oranını girin" />
+                    <Input type="number" placeholder="" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label>İmtiyazlar</Label>
-                  <Input placeholder="İmtiyazları girin" />
+                  <Input placeholder="" />
                 </div>
 
                 <div className="space-y-2">
                   <Label>Kampanya İle Olan İlişkisi</Label>
-                  <Textarea
+                  <Input
                     value={relationshipText}
                     onChange={(e) => setRelationshipText(e.target.value)}
                     maxLength={200}
-                    placeholder="Kampanya ile olan ilişkisini açıklayın"
+                    placeholder=""
                   />
                   <div className="text-sm text-muted-foreground text-right">{relationshipText.length} / 200</div>
                 </div>
 
                 <div className="space-y-2">
                   <Label>İş Deneyimi</Label>
-                  <Textarea
+                  <Input
                     value={experienceText}
                     onChange={(e) => setExperienceText(e.target.value)}
                     maxLength={5000}
-                    placeholder="İş deneyimlerini açıklayın"
+                    placeholder=""
                   />
                   <div className="text-sm text-muted-foreground text-right">{experienceText.length} / 5000</div>
                 </div>
 
                 <div className="space-y-2">
                   <Label>Uzmanlık Alanları</Label>
-                  <Textarea
+                  <Input
                     value={expertiseText}
                     onChange={(e) => setExpertiseText(e.target.value)}
                     maxLength={5000}
-                    placeholder="Uzmanlık alanlarını açıklayın"
+                    placeholder=""
                   />
                   <div className="text-sm text-muted-foreground text-right">{expertiseText.length} / 5000</div>
                 </div>
@@ -243,7 +243,7 @@ export default function KampanyaKurulusPage({ params }: { params: { kampanyaId: 
         {/* Navigation buttons */}
         <div className="flex justify-between items-center mt-6">
           <Button type="button" variant="outline" size="lg" onClick={handlePrevClick}>
-            <ChevronRight className="w-4 h-4 ml-2" />
+            <ChevronLeft className="w-4 h-4 ml-2" />
             Önceki Forma Dön
           </Button>
           <Button type="submit" size="lg">

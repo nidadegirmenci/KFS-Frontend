@@ -3,12 +3,12 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useParams} from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Input } from "@/app/components/ui/input"
 import { Label } from "@/app/components/ui/label"
 import { Button } from "@/app/components/ui/button"
-import { Textarea } from "@/app/components/ui/textarea"
+import { TextEditor } from "@/app/components/ui/text-editor"
 import {
   Plus,
   Upload,
@@ -18,12 +18,9 @@ import {
   Instagram,
   Twitter,
   Linkedin,
-  Bold,
-  Italic,
-  Underline,
-  Heading,
-  List,
-  ListOrdered,
+  ChevronRight,
+  ChevronLeft
+
 } from "lucide-react"
 import { useNavigationHelpers } from "../utils/navigation"
 import { Popover, PopoverContent, PopoverTrigger } from "@/app/components/ui/popover"
@@ -66,8 +63,10 @@ const MAX_TEXT_LENGTH = 500
 
 export default function TakimPage() {
   const router = useRouter()
-  const { getPreviousPage } = useNavigationHelpers()
+  const { getPreviousPage, getNextPage } = useNavigationHelpers()
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
+  const params = useParams<{ kampanyaId: string }>() // useParams ile kampanyaId al
+  const kampanyaId = params?.kampanyaId || "" // ID yoksa boş string ata
 
   const addTeamMember = () => {
     const newMember: TeamMember = {
@@ -104,9 +103,9 @@ export default function TakimPage() {
       teamMembers.map((member) =>
         member.id === id
           ? {
-              ...member,
-              [field]: maxLength ? value.slice(0, maxLength) : value,
-            }
+            ...member,
+            [field]: maxLength ? value.slice(0, maxLength) : value,
+          }
           : member,
       ),
     )
@@ -121,7 +120,24 @@ export default function TakimPage() {
     if (previousPage) {
       router.push(previousPage)
     }
-  }
+  };
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+  
+    // Form verisini oluştur
+    const formData = {
+      teamMembers,
+    };
+  
+    console.log("Form Data:", formData); // Debugging için
+  
+    // Burada formData'yı API'ye göndermek için fetch veya axios kullanılabilir
+  
+    const nextPage = getNextPage("takim"); // Bir sonraki sayfa yolunu al
+    if (nextPage) {
+      router.push(nextPage); // Kullanıcıyı bir sonraki sayfaya yönlendir
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -152,7 +168,7 @@ export default function TakimPage() {
                           id={`name-${member.id}`}
                           value={member.name}
                           onChange={(e) => handleInputChange(member.id, "name", e.target.value)}
-                          placeholder="Ad"
+                          placeholder=""
                         />
                       </div>
                       <div className="space-y-2">
@@ -161,7 +177,7 @@ export default function TakimPage() {
                           id={`surname-${member.id}`}
                           value={member.surname}
                           onChange={(e) => handleInputChange(member.id, "surname", e.target.value)}
-                          placeholder="Soyad"
+                          placeholder=""
                         />
                       </div>
                     </div>
@@ -171,7 +187,7 @@ export default function TakimPage() {
                         id={`position-${member.id}`}
                         value={member.position}
                         onChange={(e) => handleInputChange(member.id, "position", e.target.value)}
-                        placeholder="Pozisyon/Ünvan"
+                        placeholder=""
                       />
                     </div>
                     <div className="space-y-2">
@@ -236,81 +252,44 @@ export default function TakimPage() {
                     {/* Biography */}
                     <div className="space-y-2">
                       <Label>Kısa Biyografi</Label>
-                      <div className="border rounded-md">
-                        <div className="flex items-center gap-1 p-2 border-b">
-                          <Button variant="ghost" size="sm">
-                            <Bold className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Italic className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Underline className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Heading className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <List className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <ListOrdered className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        <Textarea
-                          value={member.biography}
-                          onChange={(e) =>
-                            handleInputChange(member.id, "biography", e.target.value, MAX_BIOGRAPHY_LENGTH)
-                          }
-                          className="border-0 focus-visible:ring-0"
-                          placeholder="Üyenin kısa biyografisini girin..."
-                        />
-                        <div className="text-xs text-muted-foreground text-right p-2">
-                          {member.biography.length} / {MAX_BIOGRAPHY_LENGTH}
-                        </div>
-                      </div>
+                      <TextEditor
+                        value={member.biography}
+                        onChange={(newValue) => handleInputChange(member.id, "biography", newValue, MAX_BIOGRAPHY_LENGTH)}
+                        maxLength={MAX_BIOGRAPHY_LENGTH}
+                      />
                     </div>
 
                     {/* Responsibilities */}
                     <div className="space-y-2">
                       <Label>Şirkette Üstlendiği Görev ve Sorumluluklar</Label>
-                      <Textarea
+                      <TextEditor
                         value={member.responsibilities}
-                        onChange={(e) =>
-                          handleInputChange(member.id, "responsibilities", e.target.value, MAX_TEXT_LENGTH)
-                        }
-                        placeholder="Üyenin şirketteki görev ve sorumluluklarını girin..."
+                        onChange={(newValue) => handleInputChange(member.id, "responsibilities", newValue, MAX_TEXT_LENGTH)}
+                        maxLength={MAX_TEXT_LENGTH}
                       />
-                      <div className="text-xs text-muted-foreground text-right">
-                        {member.responsibilities.length} / {MAX_TEXT_LENGTH}
-                      </div>
                     </div>
+
 
                     {/* Expertise */}
                     <div className="space-y-2">
                       <Label>Uzmanlık Alanı ve Profesyonel Tecrübesi</Label>
-                      <Textarea
+                      <TextEditor
                         value={member.expertise}
-                        onChange={(e) => handleInputChange(member.id, "expertise", e.target.value, MAX_TEXT_LENGTH)}
-                        placeholder="Üyenin uzmanlık alanı ve profesyonel tecrübesini girin..."
+                        onChange={(newValue) => handleInputChange(member.id, "expertise", newValue, MAX_TEXT_LENGTH)}
+                        maxLength={MAX_TEXT_LENGTH}
                       />
-                      <div className="text-xs text-muted-foreground text-right">
-                        {member.expertise.length} / {MAX_TEXT_LENGTH}
-                      </div>
                     </div>
 
                     {/* Relationship */}
                     <div className="space-y-2">
                       <Label>Girişimci ile İlişkisinin Kaynağı</Label>
-                      <Textarea
+                      <TextEditor
                         value={member.relationship}
-                        onChange={(e) => handleInputChange(member.id, "relationship", e.target.value, MAX_TEXT_LENGTH)}
-                        placeholder="Üyenin girişimci ile olan ilişkisini açıklayın..."
+                        onChange={(newValue) => handleInputChange(member.id, "relationship", newValue, MAX_TEXT_LENGTH)}
+                        maxLength={MAX_TEXT_LENGTH}
                       />
-                      <div className="text-xs text-muted-foreground text-right">
-                        {member.relationship.length} / {MAX_TEXT_LENGTH}
-                      </div>
                     </div>
+
 
                     {/* Social Media */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -323,7 +302,7 @@ export default function TakimPage() {
                             value={member.email}
                             onChange={(e) => handleInputChange(member.id, "email", e.target.value)}
                             className="pl-8"
-                            placeholder="E-posta adresi"
+                            placeholder=""
                           />
                         </div>
                       </div>
@@ -335,7 +314,7 @@ export default function TakimPage() {
                             value={member.instagram}
                             onChange={(e) => handleInputChange(member.id, "instagram", e.target.value)}
                             className="pl-8"
-                            placeholder="Instagram kullanıcı adı"
+                            placeholder=""
                           />
                         </div>
                       </div>
@@ -347,7 +326,7 @@ export default function TakimPage() {
                             value={member.twitter}
                             onChange={(e) => handleInputChange(member.id, "twitter", e.target.value)}
                             className="pl-8"
-                            placeholder="Twitter kullanıcı adı"
+                            placeholder=""
                           />
                         </div>
                       </div>
@@ -359,7 +338,7 @@ export default function TakimPage() {
                             value={member.linkedin}
                             onChange={(e) => handleInputChange(member.id, "linkedin", e.target.value)}
                             className="pl-8"
-                            placeholder="LinkedIn profil linki"
+                            placeholder=""
                           />
                         </div>
                       </div>
@@ -382,10 +361,12 @@ export default function TakimPage() {
 
       <div className="flex justify-between">
         <Button variant="outline" size="lg" onClick={handlePreviousPage}>
+           <ChevronLeft className="w-4 h-4 ml-2" />
           Önceki Forma Dön
         </Button>
-        <Button type="submit" size="lg">
+        <Button type="submit" size="lg" onClick={handleSubmit}>
           Kaydet ve İlerle
+           <ChevronRight className="w-4 h-4 ml-2" />
         </Button>
       </div>
     </div>

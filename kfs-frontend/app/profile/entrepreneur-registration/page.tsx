@@ -4,7 +4,10 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Button } from "@/app/components/ui/button"
 import { FileUpload } from "../../components/ui/file-upload"
+import { Label } from "@/app/components/ui/label"
 import "./styles/custom-inputs.css"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
+import { getCities, getDistricts } from "./cities-districts"
 
 export default function EntrepreneurRegistrationPage() {
   const [formData, setFormData] = useState({
@@ -19,7 +22,7 @@ export default function EntrepreneurRegistrationPage() {
     website: "https://johndoe.com",
     gender: "male",
     academicTitle: "other",
-  
+
     // New fields
     country: "",
     city: "",
@@ -36,7 +39,7 @@ export default function EntrepreneurRegistrationPage() {
     iban: "",
     nationality: "",
   })
-  
+
 
   const [countries, setCountries] = useState<{ name: string; code: string }[]>([])
 
@@ -61,6 +64,15 @@ export default function EntrepreneurRegistrationPage() {
       })
       .catch((error) => console.error("Error fetching countries:", error))
   }, [])
+
+  const [selectedCity, setSelectedCity] = useState<string>("")
+  const [districts, setDistricts] = useState<string[]>([])
+  const cities = getCities()
+
+  const handleCityChange = (city: string) => {
+    setSelectedCity(city)
+    setDistricts(getDistricts(city))
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -246,26 +258,38 @@ export default function EntrepreneurRegistrationPage() {
               <label htmlFor="country">Ülke</label>
             </div>
             <div className="form-group">
-              <input
-                id="city"
-                name="city"
-                value={formData.city}
-                onChange={handleInputChange}
-                className="underline-input"
-                placeholder=" "
-              />
-              <label htmlFor="city">Şehir</label>
+              <Label htmlFor="city">
+                İl <span className="text-red-500">*</span>
+              </Label>
+              <Select onValueChange={handleCityChange} required >
+                <SelectTrigger>
+                  <SelectValue placeholder="" />
+                </SelectTrigger>
+                <SelectContent>
+                  {cities.map((city) => (
+                    <SelectItem key={city} value={city}>
+                      {city}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="form-group">
-              <input
-                id="district"
-                name="district"
-                value={formData.district}
-                onChange={handleInputChange}
-                className="underline-input"
-                placeholder=" "
-              />
-              <label htmlFor="district">İlçe</label>
+           <label htmlFor="district">
+                               İlçe <span className="text-red-500">*</span>
+                             </label>
+                             <Select required>
+                               <SelectTrigger>
+                                 <SelectValue placeholder="" />
+                               </SelectTrigger>
+                               <SelectContent>
+                                 {districts.map((district) => (
+                                   <SelectItem key={district} value={district}>
+                                     {district}
+                                   </SelectItem>
+                                 ))}
+                               </SelectContent>
+                             </Select>
             </div>
             <div className="form-group">
               <input
@@ -364,6 +388,7 @@ export default function EntrepreneurRegistrationPage() {
             <div className="form-group md:col-span-2">
               <div className="flex items-center space-x-2">
                 <input
+                aria-label="Özgeçmiş"
                   id="cv"
                   type="text"
                   placeholder="Dosya seçilmedi"
@@ -372,7 +397,7 @@ export default function EntrepreneurRegistrationPage() {
                   className="underline-input"
                 />
                 <label htmlFor="cv-upload" className="cursor-pointer">
-                  <div className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2">
+                  <div className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-end justify-end rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 " >
                     Belge Yükle
                   </div>
                 </label>
@@ -383,8 +408,9 @@ export default function EntrepreneurRegistrationPage() {
                   onChange={(e) => handleFileSelect(e.target.files?.[0] || null, "cv")}
                 />
               </div>
-              <label htmlFor="cv">Özgeçmiş</label>
+              
             </div>
+            
             <div className="form-group">
               <select
                 name="bankName"
@@ -424,4 +450,3 @@ export default function EntrepreneurRegistrationPage() {
     </Card>
   )
 }
-

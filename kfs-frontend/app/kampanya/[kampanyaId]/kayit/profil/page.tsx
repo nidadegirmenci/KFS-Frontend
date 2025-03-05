@@ -6,15 +6,15 @@ import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Input } from "@/app/components/ui/input"
 import { Label } from "@/app/components/ui/label"
-import { Textarea } from "@/app/components/ui/textarea"
+import { TextEditor } from "@/app/components/ui/text-editor"
 import { Button } from "@/app/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
 import { Switch } from "@/app/components/ui/switch"
-import { Bold, Italic, Underline, Heading, List, ListOrdered, Upload, Plus, HelpCircle, X } from "lucide-react"
+import { ChevronRight, Upload, Plus, HelpCircle, X } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/app/components/ui/popover"
 import { Badge } from "@/app/components/ui/badge"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/app/components/ui/command"
-import { useRouter } from "next/navigation"
+import { useRouter ,useParams } from "next/navigation"
 import { useNavigationHelpers } from "../utils/navigation"
 import { cities, type City } from "./cities"
 import "./styles/custom-inputs.css"
@@ -42,7 +42,7 @@ const MAX_SCOPE_DETAIL_LENGTH = 20000
 
 export default function KampanyaProfilPage() {
   const router = useRouter()
-  const { getPreviousPage, getNextPage } = useNavigationHelpers()
+  const { getNextPage } = useNavigationHelpers()
   const [logo, setLogo] = useState<string | null>(null)
   const [hasPreviousCampaign, setHasPreviousCampaign] = useState(false)
   const [description, setDescription] = useState("")
@@ -56,6 +56,8 @@ export default function KampanyaProfilPage() {
   const [selectedLocations, setSelectedLocations] = useState<City[]>([])
   const [participants, setParticipants] = useState<Array<{ id: string; email: string }>>([])
   const [email, setEmail] = useState("")
+  const params = useParams<{ kampanyaId: string }>() // useParams kullanımı
+  const kampanyaId = params?.kampanyaId || "" 
 
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -71,12 +73,7 @@ export default function KampanyaProfilPage() {
   const handleLogoDelete = () => {
     setLogo(null)
   }
-  const handlePreviousPage = () => {
-    const previousPage = getPreviousPage("profil")
-    if (previousPage) {
-      router.push(previousPage)
-    }
-  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // Include selectedLocations in your form data
@@ -109,7 +106,7 @@ export default function KampanyaProfilPage() {
                     <span className="text-destructive">*</span>
                     <PopoverTooltip content="Girişiminizin resmi adını giriniz" />
                   </div>
-                  <Input id="companyName" placeholder="Girişim adını giriniz" />
+                  <Input id="companyName" placeholder="" />
                 </div>
 
                 <div className="space-y-2">
@@ -118,7 +115,7 @@ export default function KampanyaProfilPage() {
                     <span className="text-destructive">*</span>
                     <PopoverTooltip content="Burada yer alan kampanya adı tanıtımlarda kullanılacaktır. Lütfen kampanyanız için kısa ve etkileyici bir ad yazınız." />
                   </div>
-                  <Input id="campaignName" placeholder="Kampanya adını giriniz" />
+                  <Input id="campaignName" placeholder="" />
                 </div>
               </div>
 
@@ -172,7 +169,7 @@ export default function KampanyaProfilPage() {
                 </div>
                 <Input
                   id="summary"
-                  placeholder="Kampanyanızı tek cümle ile özetleyin"
+                  placeholder=""
                   value={summary}
                   onChange={(e) => setSummary(e.target.value.slice(0, MAX_SUMMARY_LENGTH))}
                   maxLength={MAX_SUMMARY_LENGTH}
@@ -191,37 +188,14 @@ export default function KampanyaProfilPage() {
                       <span className="text-destructive">*</span>
                       <PopoverTooltip content="Projenizi detaylı bir şekilde anlatın" />
                     </div>
-                    <div className="rich-editor">
-                      <div className="rich-editor-toolbar">
-                        <Button variant="ghost" size="icon">
-                          <Bold className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <Italic className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <Underline className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <Heading className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <List className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <ListOrdered className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <Textarea
-                        className="rich-editor-content"
-                        placeholder="Projenizi detaylı bir şekilde anlatın"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value.slice(0, MAX_DESCRIPTION_LENGTH))}
-                      />
-                    </div>
-                    <div className="text-sm text-muted-foreground text-right">
-                      {description.length} / {MAX_DESCRIPTION_LENGTH}
-                    </div>
+
+                    <TextEditor
+                      value={description}
+                      onChange={(newValue) => setDescription(newValue.slice(0, MAX_DESCRIPTION_LENGTH))}
+                      maxLength={MAX_DESCRIPTION_LENGTH}
+                    />
+
+
                   </div>
 
                   {/* Kapsam Amaç ve Konusu (Özet) */}
@@ -231,15 +205,12 @@ export default function KampanyaProfilPage() {
                       <span className="text-destructive">*</span>
                       <PopoverTooltip content="Projenizin kapsamını, amacını ve konusunu özetleyin" />
                     </div>
-                    <Textarea
-                      id="scope"
+                    <TextEditor
                       value={scope}
-                      onChange={(e) => setScope(e.target.value.slice(0, MAX_SCOPE_LENGTH))}
-                      placeholder="Projenizin kapsamını kısaca özetleyin"
+                      onChange={(newValue) => setScope(newValue.slice(0, MAX_SCOPE_LENGTH))}
+                      maxLength={MAX_SCOPE_LENGTH}
                     />
-                    <div className="text-sm text-muted-foreground text-right">
-                      {scope.length} / {MAX_SCOPE_LENGTH}
-                    </div>
+
                   </div>
 
                   {/* Projenin Kapsam, Amaç ve Konusu */}
@@ -249,37 +220,12 @@ export default function KampanyaProfilPage() {
                       <span className="text-destructive">*</span>
                       <PopoverTooltip content="Projenizin kapsamını, amacını ve konusunu detaylı olarak açıklayın" />
                     </div>
-                    <div className="rich-editor">
-                      <div className="rich-editor-toolbar">
-                        <Button variant="ghost" size="icon">
-                          <Bold className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <Italic className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <Underline className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <Heading className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <List className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <ListOrdered className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <Textarea
-                        className="rich-editor-content"
-                        value={scopeDetail}
-                        onChange={(e) => setScopeDetail(e.target.value.slice(0, MAX_SCOPE_DETAIL_LENGTH))}
-                        placeholder="Projenizin kapsamını detaylı olarak açıklayın"
-                      />
-                    </div>
-                    <div className="text-sm text-muted-foreground text-right">
-                      {scopeDetail.length} / {MAX_SCOPE_DETAIL_LENGTH}
-                    </div>
+                    <TextEditor
+                      value={scopeDetail}
+                      onChange={(newValue) => setScopeDetail(newValue.slice(0, MAX_SCOPE_DETAIL_LENGTH))}
+                      maxLength={MAX_SCOPE_DETAIL_LENGTH}
+                    />
+
                   </div>
 
                   {/* Girişimin Aşaması */}
@@ -456,7 +402,7 @@ export default function KampanyaProfilPage() {
               </div>
               <div className="flex gap-2">
                 <Input
-                  placeholder="Fonbulucu'da kayıtlı mail adresi"
+                  aria-label="Fonbulucu'da kayıtlı mail adresi"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -506,6 +452,7 @@ export default function KampanyaProfilPage() {
         <div className="flex justify-end">
           <Button type="submit" size="lg">
             Kaydet ve İlerle
+            <ChevronRight className="w-4 h-4 ml-2" />
           </Button>
         </div>
       </div>
