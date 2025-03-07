@@ -118,7 +118,7 @@ export default function KampanyaRisklerPage({ params }: { params: { kampanyaId: 
           </div>
 
           <div className="flex justify-between pt-4">
-            <Button variant="outline" onClick={handlePrevClick}>
+            <Button type="button" variant="outline" onClick={handlePrevClick}>
               <ChevronLeft className="w-4 h-4 ml-2" />
               Önceki Forma Dön
             </Button>

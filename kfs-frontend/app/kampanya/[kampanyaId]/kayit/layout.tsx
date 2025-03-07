@@ -30,14 +30,14 @@ const sidebarItems = [
   { href: "belgeler", label: "Belge/Ödül/Hukuk", icon: Gift },
   { href: "takim", label: "Takım", icon: Users },
   { href: "urun", label: "Ürün/Üretim Modeli", icon: Package },
-  { href: "market", label: "Market/Rekabet/Hedef", icon: BarChart2 },
+  { href: "market", label: "Pazar/Rekabet/Hedef", icon: BarChart2 },
   { href: "analiz", label: "Analizler", icon: PieChart },
   { href: "riskler", label: "Riskler", icon: AlertTriangle },
   { href: "fonlama", label: "Fonlama", icon: DollarSign },
   { href: "kurulus", label: "Kuruluş", icon: Building },
   { href: "finans", label: "Finansal Tablolar", icon: FileSpreadsheet },
   { href: "gorsel", label: "Görseller", icon: Image },
-  { href: "diger-belgeler", label: "Diğer Belgeler", icon: File },
+  { href: "diger-dokumanlar", label: "Diğer Dökümanlar", icon: File },
   { href: "onay", label: "Onaya Gönder", icon: CheckCircle2 },
   { href: "onizleme", label: "Önizleme", icon: Eye }, // Added back Önizleme
 ]

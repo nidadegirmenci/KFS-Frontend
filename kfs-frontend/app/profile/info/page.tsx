@@ -10,7 +10,7 @@ import { Button } from "@/app/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
 import { FileUpload } from "../../components/ui/file-upload"
 import { Plus, Trash2, Linkedin, Instagram, Twitter, Globe } from "lucide-react"
-
+import "../entrepreneur-registration/styles/custom-inputs.css"
 
 // Mock user data
 const mockUserInfo = {

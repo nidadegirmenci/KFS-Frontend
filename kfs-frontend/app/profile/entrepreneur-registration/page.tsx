@@ -8,6 +8,7 @@ import { Label } from "@/app/components/ui/label"
 import "./styles/custom-inputs.css"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
 import { getCities, getDistricts } from "./cities-districts"
+import { UploadCloud , Trash2} from "lucide-react"
 
 export default function EntrepreneurRegistrationPage() {
   const [formData, setFormData] = useState({
@@ -82,11 +83,15 @@ export default function EntrepreneurRegistrationPage() {
   const handleSelectChange = (value: string, name: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
+  const [selectedFile, setSelectedFile] = useState<File | null>(null); // Dosya state'i
 
-  const handleFileSelect = (file: File | null, fieldName: string) => {
-    setFormData((prev) => ({ ...prev, [fieldName]: file }))
-  }
-
+  const handleFileSelect = (file: File | null) => {
+    setSelectedFile(file); // Seçili dosyayı state'e kaydet
+  };
+  
+  const handleRemoveFile = () => {
+    setSelectedFile(null); // Dosyayı temizle
+  };
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     console.log("Form submitted:", formData)
@@ -275,21 +280,21 @@ export default function EntrepreneurRegistrationPage() {
               </Select>
             </div>
             <div className="form-group">
-           <label htmlFor="district">
-                               İlçe <span className="text-red-500">*</span>
-                             </label>
-                             <Select required>
-                               <SelectTrigger>
-                                 <SelectValue placeholder="" />
-                               </SelectTrigger>
-                               <SelectContent>
-                                 {districts.map((district) => (
-                                   <SelectItem key={district} value={district}>
-                                     {district}
-                                   </SelectItem>
-                                 ))}
-                               </SelectContent>
-                             </Select>
+              <label htmlFor="district">
+                İlçe <span className="text-red-500">*</span>
+              </label>
+              <Select required>
+                <SelectTrigger>
+                  <SelectValue placeholder="" />
+                </SelectTrigger>
+                <SelectContent>
+                  {districts.map((district) => (
+                    <SelectItem key={district} value={district}>
+                      {district}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="form-group">
               <input
@@ -386,31 +391,48 @@ export default function EntrepreneurRegistrationPage() {
               <label htmlFor="workExperience">İş Deneyimleri</label>
             </div>
             <div className="form-group md:col-span-2">
-              <div className="flex items-center space-x-2">
-                <input
-                aria-label="Özgeçmiş"
-                  id="cv"
-                  type="text"
-                  placeholder="Dosya seçilmedi"
-                  value={formData.cv instanceof File ? formData.cv.name : ""}
-                  readOnly
-                  className="underline-input"
-                />
-                <label htmlFor="cv-upload" className="cursor-pointer">
-                  <div className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-end justify-end rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 " >
-                    Belge Yükle
-                  </div>
-                </label>
-                <input
-                  id="cv-upload"
-                  type="file"
-                  className="hidden"
-                  onChange={(e) => handleFileSelect(e.target.files?.[0] || null, "cv")}
-                />
-              </div>
-              
+
+            <div className="flex items-center space-x-2">
+    <div className="relative w-full">
+      <input
+        aria-label="Özgeçmiş"
+        id="cv"
+        type="text"
+        placeholder="Dosya seçilmedi"
+        value={selectedFile ? selectedFile.name : ""}
+        readOnly
+        className="underline-input w-full pr-20" // Sağda ikonlar için ekstra padding
+      />
+      {/* Yükleme butonu */}
+      <button
+        type="button"
+        onClick={() => document.getElementById("cv-upload")?.click()}
+        className="absolute right-10 top-1/2 -translate-y-1/2 cursor-pointer"
+      >
+        <UploadCloud className="w-5 h-5 text-gray-500 hover:text-gray-700 transition-colors" />
+      </button>
+
+      {/* Çöp kutusu butonu - yalnızca dosya seçildiyse görünür */}
+      {selectedFile && (
+        <button
+          type="button"
+          onClick={handleRemoveFile}
+          className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+        >
+          <Trash2 className="w-5 h-5 text-red-500 hover:text-red-700 transition-colors" />
+        </button>
+      )}
+    </div>
+    {/* Gizli dosya yükleme inputu */}
+    <input
+      id="cv-upload"
+      type="file"
+      className="hidden"
+      onChange={(e) => handleFileSelect(e.target.files?.[0] || null)}
+    />
+  </div>
             </div>
-            
+
             <div className="form-group">
               <select
                 name="bankName"

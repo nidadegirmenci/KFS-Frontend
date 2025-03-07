@@ -15,19 +15,22 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type,
           className
         )}
         ref={ref}
-        placeholder="" // Placeholder boş bırakılmalı
         {...props}
       />
-      {/* Label (Floating) */}
+      {/* Label */}
       <label
         htmlFor={id}
-        className="absolute left-1 top-1/2 text-gray-400 text-sm transform -translate-y-1/2 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-0 peer-focus:text-xs peer-focus:text-blue-500"
+        className="absolute left-1 top-1/2 text-gray-400 text-sm transform -translate-y-1/2 transition-all
+                   peer-focus:top-0 peer-focus:text-xs peer-focus:text-blue-500
+                   peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
+                   peer-valid:top-0 peer-valid:text-xs peer-valid:text-blue-500"
       >
         {props["aria-label"] || props.placeholder}
       </label>
     </div>
   );
 });
+
 Input.displayName = "Input";
 
 export { Input };

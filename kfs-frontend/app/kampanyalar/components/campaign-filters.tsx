@@ -33,7 +33,7 @@ export function CampaignFilters({
       {/* Search */}
       <div className="space-y-2">
         <Label>Arama Yap</Label>
-        <Input placeholder="Arama Yap" value={searchQuery} onChange={(e) => onSearchChange(e.target.value)} />
+        <Input placeholder="" value={searchQuery} onChange={(e) => onSearchChange(e.target.value)} />
       </div>
 
       {/* Campaign Status */}
@@ -58,7 +58,7 @@ export function CampaignFilters({
       {/* Sectors */}
       <div className="space-y-2">
         <Label>Sektör</Label>
-        <Input placeholder="Arama Yap" className="mb-2" />
+        <Input placeholder="" className="mb-2" />
         <div className="space-y-2 max-h-48 overflow-y-auto">
           {sectors.map((sector) => (
             <div key={sector.id} className="flex items-center space-x-2">
@@ -78,7 +78,7 @@ export function CampaignFilters({
       {/* Categories */}
       <div className="space-y-2">
         <Label>Kategori</Label>
-        <Input placeholder="Arama Yap" className="mb-2" />
+        <Input placeholder="" className="mb-2" />
         <div className="space-y-2 max-h-48 overflow-y-auto">
           {categories.map((category) => (
             <div key={category.id} className="flex items-center space-x-2">
